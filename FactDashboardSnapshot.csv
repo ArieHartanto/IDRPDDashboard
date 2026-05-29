@@ -1,0 +1,4 @@
+SnapshotID,SnapshotDateTime,SnapshotDate,SnapshotTime,IsLive,OperationalStatus,TreasuryEntity,DataSourceLabel,DashboardVersion,RatioStatus
+SNAP-20260526-001,2026-05-26 10:48:00,2026-05-26,10:48,TRUE,OPERASIONAL,Bank Nobu Treasury,idrp.io/transparency,v4,GREEN
+SNAP-20260527-001,2026-05-27 10:00:00,2026-05-27,10:00,TRUE,OPERASIONAL,Bank Nobu Treasury,idrp.io/transparency,v4,GREEN
+SNAP-20260528-001,2026-05-28 15:00:14,2026-05-28,15:00,TRUE,OPERASIONAL,Bank Nobu Treasury,idrp.io/transparency,v4,GREEN

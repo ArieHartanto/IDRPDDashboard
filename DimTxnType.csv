@@ -1,0 +1,5 @@
+TxnTypeID,TxnTypeName,Sign,ColorHex,Description
+1,Mint,1,#3CFF78,Token creation / minting
+2,Burn,-1,#FF5E7E,Token destruction / burning
+3,Redemption,-1,#F3B63F,User redemption request
+4,PendingRedemption,0,#F3B63F,Redemption request not yet settled

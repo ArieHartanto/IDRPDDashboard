@@ -1,0 +1,6 @@
+NetworkID,NetworkName,NetworkShort,SortOrder,BrandColorHex,IsActive,SharePercent
+1,Kaia,K,1,#FF6B35,TRUE,98.03
+2,Polygon,P,2,#8247E5,TRUE,1.09
+3,Binance Smart Chain,B,3,#F3BA2F,TRUE,0.025
+4,Tron,T,4,#FF0013,TRUE,0.005
+5,Ethereum,E,5,#627EEA,TRUE,0.020

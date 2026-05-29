@@ -1,0 +1,4 @@
+BankID,BankName,BankType,SortOrder,ColorHex,IsActive,IsUpcomingEscrow,EscrowActiveDate
+1,Bank BNI,Escrow,1,#27D3FF,TRUE,FALSE,2024-01-01
+2,Bank Nobu,Escrow,2,#6F8FB5,TRUE,TRUE,2026-06-01
+3,Bonds,Bonds,3,#B9FF3B,TRUE,FALSE,2024-01-01
