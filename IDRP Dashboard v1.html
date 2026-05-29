@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDRP Stablecoin Command Center</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #071B34;
+    font-family: 'Bahnschrift', 'Segoe UI', sans-serif;
+    color: #E8F1FF;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .gold-line { height: 3px; background: linear-gradient(90deg, #F3B63F, #FFD700, #F3B63F); width: 100%; }
+  .header {
+    background: #0A2040;
+    padding: 10px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1C3F66;
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #E8F1FF;
+    text-transform: uppercase;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: #6F8FB5;
+    letter-spacing: 1px;
+  }
+  .live-dot {
+    width: 10px; height: 10px;
+    background: #3CFF78;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #3CFF78;
+    display: inline-block;
+    margin-right: 6px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; } 50% { opacity:0.4; }
+  }
+  .live-label { color: #3CFF78; font-weight: 700; letter-spacing: 2px; }
+  .main { display: grid; grid-template-columns: 220px 1fr; height: calc(100% - 44px - 3px - 32px); padding: 10px 16px; gap: 10px; }
+  .left-panel { display: flex; flex-direction: column; gap: 10px; }
+  .right-panel { display: flex; flex-direction: column; gap: 10px; }
+  .panel {
+    background: #0D2342;
+    border: 1px solid #1C3F66;
+    border-radius: 4px;
+    padding: 10px 14px;
+  }
+  .logo-panel {
+    background: #0D2342;
+    border: 1px solid #1C3F66;
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-circle {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    border: 3px solid #F3B63F;
+    background: #071B34;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-circle span { font-size: 22px; font-weight: 900; color: #E8F1FF; letter-spacing: 2px; }
+  .logo-circle small { font-size: 7px; color: #6F8FB5; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+  .bank-label {
+    background: transparent;
+    border: 1px solid #F3B63F;
+    color: #F3B63F;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  .op-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #6F8FB5; letter-spacing: 2px; }
+  .op-dot { width: 8px; height: 8px; background: #3CFF78; border-radius: 50%; box-shadow: 0 0 6px #3CFF78; }
+  .panel-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #6F8FB5;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #E8F1FF;
+    letter-spacing: 1px;
+  }
+  .kpi-prefix { font-size: 11px; color: #6F8FB5; margin-right: 4px; }
+  .kpi-green { color: #3CFF78; }
+  .kpi-pink { color: #FF5E7E; }
+  .kpi-yellow { color: #F3B63F; }
+  .kpi-cyan { color: #27D3FF; }
+  .top-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .mid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .bottom-row { display: grid; grid-template-columns: 280px 1fr 1fr; gap: 10px; flex: 1; }
+  .ratio-big { font-size: 38px; font-weight: 900; color: #3CFF78; }
+  .sub-text { font-size: 9px; color: #6F8FB5; margin-top: 3px; line-height: 1.6; }
+  .sub-green { color: #3CFF78; font-size: 9px; }
+  .progress-bar-bg { height: 5px; background: #1C3F66; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .progress-bar-fill-green { height: 100%; background: #3CFF78; border-radius: 3px; }
+  .progress-bar-fill-pink { height: 100%; background: #FF5E7E; border-radius: 3px; }
+  .progress-bar-fill-cyan { height: 100%; background: #27D3FF; border-radius: 3px; }
+  .mint-burn-row { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+  .mint-burn-item { font-size: 10px; display: flex; gap: 6px; }
+  .net-badge {
+    background: #0A3020;
+    border: 1px solid #3CFF78;
+    color: #3CFF78;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+  .pending-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .pending-box {
+    background: #0A2040;
+    border: 1px solid #1C3F66;
+    border-radius: 3px;
+    padding: 6px 10px;
+    text-align: center;
+  }
+  .pending-box-label { font-size: 9px; color: #6F8FB5; letter-spacing: 1px; }
+  .pending-box-val { font-size: 15px; font-weight: 700; color: #E8F1FF; }
+  .donut-area { display: flex; gap: 14px; align-items: center; margin-top: 8px; }
+  .donut-svg { flex-shrink: 0; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #E8F1FF; margin-bottom: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .legend-pct { margin-left: auto; color: #27D3FF; font-weight: 700; }
+  .total-reserve-label { font-size: 9px; color: #6F8FB5; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .total-reserve-val { font-size: 13px; color: #27D3FF; font-weight: 700; }
+  .bank-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #1C3F66; }
+  .bank-rank { font-size: 11px; color: #6F8FB5; width: 16px; }
+  .bank-info { flex: 1; }
+  .bank-name { font-size: 12px; font-weight: 700; color: #E8F1FF; }
+  .bank-amt { font-size: 9px; color: #6F8FB5; }
+  .bank-bar-bg { width: 120px; height: 5px; background: #1C3F66; border-radius: 3px; overflow: hidden; }
+  .bank-bar-fill { height: 100%; border-radius: 3px; }
+  .bank-pct { font-size: 11px; font-weight: 700; width: 40px; text-align: right; }
+  .reserve-ratio-strip {
+    background: #0A3020;
+    border: 1px solid #1C3F66;
+    border-radius: 3px;
+    padding: 7px 12px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ratio-dot { width: 10px; height: 10px; background: #3CFF78; border-radius: 50%; box-shadow: 0 0 8px #3CFF78; flex-shrink: 0; }
+  .ratio-strip-text { font-size: 10px; color: #3CFF78; }
+  .chain-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .chain-table th { font-size: 9px; color: #6F8FB5; letter-spacing: 1px; text-transform: uppercase; padding: 4px 6px; text-align: right; border-bottom: 1px solid #1C3F66; }
+  .chain-table th:first-child { text-align: left; }
+  .chain-table td { padding: 5px 6px; font-size: 10px; text-align: right; border-bottom: 1px solid #0D2342; }
+  .chain-table td:first-child { text-align: left; }
+  .chain-name-cell { display: flex; align-items: center; gap: 8px; }
+  .chain-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; }
+  .chain-share { font-size: 8px; color: #6F8FB5; }
+  .total-supply-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1C3F66; padding-top: 6px; margin-top: 4px; }
+  .footer {
+    background: #0A2040;
+    border-top: 1px solid #1C3F66;
+    padding: 7px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 32px;
+  }
+  .footer-left { font-size: 9px; color: #6F8FB5; letter-spacing: 1px; }
+  .footer-right { display: flex; gap: 24px; font-size: 10px; }
+  .footer-stat { display: flex; flex-direction: column; align-items: center; }
+  .footer-stat-label { font-size: 8px; color: #6F8FB5; letter-spacing: 1px; }
+  .nobu-badge {
+    font-size: 8px;
+    color: #F3B63F;
+    border: 1px solid #F3B63F;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-top: 2px;
+    display: inline-block;
+  }
+  .escrow-pct-note { font-size: 9px; color: #6F8FB5; margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<!-- GOLD LINE -->
+<div class="gold-line"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">IDRP Stablecoin Command Center</div>
+  <div class="header-right">
+    <span><span class="live-dot"></span><span class="live-label">LIVE</span></span>
+    <span>29 MEI 2026 &nbsp;·&nbsp; 09:00 WIB</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="logo-panel">
+      <div class="logo-circle">
+        <span>IDRP</span>
+        <small>Indonesian<br>Digital<br>Rupiah</small>
+      </div>
+      <div class="bank-label">Bank Nobu Treasury</div>
+      <div class="op-status"><span class="op-dot"></span> OPERASIONAL</div>
+    </div>
+
+    <!-- Nobu upcoming escrow notice -->
+    <div class="panel" style="border-color:#F3B63F33;">
+      <div class="panel-label">Bank Nobu Escrow</div>
+      <div style="font-size:10px; color:#F3B63F; margin-top:4px;">⏳ Active 1 Juni 2026</div>
+      <div style="font-size:9px; color:#6F8FB5; margin-top:4px;">Bank Nobu akan menjadi escrow bank ke-2 selain BNI mulai bulan depan.</div>
+      <div class="nobu-badge">UPCOMING ESCROW</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- ROW 1: Top KPIs -->
+    <div class="top-row">
+      <!-- Net Circulating Supply -->
+      <div class="panel">
+        <div class="panel-label">Net Circulating Supply (On-Chain)</div>
+        <div class="kpi-value"><span class="kpi-prefix">IDRP</span>277,846,127,714</div>
+        <div style="margin-top:5px;">
+          <span style="background:#0A3020;border:1px solid #3CFF78;color:#3CFF78;padding:2px 8px;border-radius:3px;font-size:9px;">▲ Data: idrp.io/transparency</span>
+        </div>
+      </div>
+
+      <!-- Reserve Ratio -->
+      <div class="panel">
+        <div class="panel-label">Reserve Ratio &nbsp;<span style="background:#0A3020;color:#3CFF78;border:1px solid #3CFF78;padding:1px 6px;border-radius:3px;font-size:9px;">AMAN &gt;1</span></div>
+        <div class="ratio-big">100.06%</div>
+        <div class="sub-text">
+          Reserve (Escrow+Bond): Rp 278,018,421,264<br>
+          ÷ Net On-Chain: IDRP 277,846,127,714<br>
+          <span class="sub-green">= 1.0006 &gt; 1.0 ✓ GREEN</span>
+        </div>
+      </div>
+
+      <!-- Reserve Balance Total -->
+      <div class="panel">
+        <div class="panel-label">Reserve Balance Total</div>
+        <div class="kpi-value" style="font-size:22px;"><span class="kpi-prefix">IDR</span>278,018,421,264</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;">
+          <div>
+            <div style="font-size:8px;color:#6F8FB5;letter-spacing:1px;">ESCROW (BNI)</div>
+            <div style="font-size:11px;color:#27D3FF;font-weight:700;">Rp 277,898,421,264</div>
+          </div>
+          <div>
+            <div style="font-size:8px;color:#6F8FB5;letter-spacing:1px;">BONDS</div>
+            <div style="font-size:11px;color:#B9FF3B;font-weight:700;">Rp 120,000,000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Mint/Burn + Pending -->
+    <div class="mid-row">
+      <!-- Mint Burn -->
+      <div class="panel">
+        <div class="panel-label">Mint / Burn Net Today</div>
+        <div style="font-size:20px;font-weight:700;color:#E8F1FF;"><span style="color:#3CFF78;">↑</span> <span class="kpi-prefix">IDRP</span>132.0M</div>
+        <div class="mint-burn-row">
+          <div class="mint-burn-item"><span style="color:#FF5E7E;">↓ Burn:</span><span style="color:#E8F1FF;">IDRP 101.5M</span></div>
+        </div>
+        <div class="net-badge">Net: +IDRP 30.5M</div>
+      </div>
+
+      <!-- Pending Redemption -->
+      <div class="panel">
+        <div class="panel-label">Pending Redemption</div>
+        <div class="kpi-value"><span class="kpi-prefix">IDRP</span>12,345,000</div>
+        <div class="pending-boxes">
+          <div class="pending-box" style="border-color:#F3B63F44;">
+            <div class="pending-box-label">T+0</div>
+            <div class="pending-box-val" style="color:#F3B63F;">7.2M</div>
+          </div>
+          <div class="pending-box">
+            <div class="pending-box-label">T+1</div>
+            <div class="pending-box-val">5.1M</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: KPI Progress Bars -->
+    <div class="kpi-row">
+      <!-- Mint Today -->
+      <div class="panel">
+        <div class="panel-label"><span class="op-dot" style="display:inline-block;"></span> Mint Today</div>
+        <div class="kpi-value" style="font-size:26px;color:#3CFF78;"><span class="kpi-prefix">IDRP</span>132,000,000</div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill-green" style="width:72%;"></div></div>
+        <div class="sub-text">72% dari target harian 184,500,000</div>
+      </div>
+
+      <!-- Burn Today -->
+      <div class="panel">
+        <div class="panel-label"><span style="display:inline-block;width:8px;height:8px;background:#FF5E7E;border-radius:50;margin-right:4px;"></span> Burn Today</div>
+        <div class="kpi-value" style="font-size:26px;color:#FF5E7E;"><span class="kpi-prefix">IDRP</span>101,500,000</div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill-pink" style="width:81%;"></div></div>
+        <div class="sub-text" style="color:#FF5E7E;">Net Flow: +IDRP 30,500,000</div>
+      </div>
+
+      <!-- Escrow Reserve BNI -->
+      <div class="panel">
+        <div class="panel-label"><span style="display:inline-block;width:8px;height:8px;background:#F3B63F;border-radius:50%;margin-right:4px;"></span> Escrow Reserve (BNI)</div>
+        <div class="kpi-value" style="font-size:20px;color:#27D3FF;"><span class="kpi-prefix">IDR</span>277,898,421,264</div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill-cyan" style="width:99.96%;"></div></div>
+        <div class="escrow-pct-note">99.96% dari total reserve · Bonds: Rp 120,000,000</div>
+      </div>
+    </div>
+
+    <!-- ROW 4: Bottom analytics -->
+    <div class="bottom-row">
+
+      <!-- Reserve Composition -->
+      <div class="panel">
+        <div class="panel-label">Reserve Composition</div>
+        <div class="donut-area">
+          <svg class="donut-svg" width="90" height="90" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r="35" fill="none" stroke="#1C3F66" stroke-width="12"/>
+            <!-- BNI Escrow 99.96% -->
+            <circle cx="45" cy="45" r="35" fill="none" stroke="#27D3FF" stroke-width="12"
+              stroke-dasharray="219.9 0.09" stroke-dashoffset="55" stroke-linecap="butt"/>
+            <!-- Bonds 0.04% -->
+            <circle cx="45" cy="45" r="35" fill="none" stroke="#B9FF3B" stroke-width="12"
+              stroke-dasharray="0.09 219.9" stroke-dashoffset="-164.9" stroke-linecap="butt"/>
+            <text x="45" y="41" text-anchor="middle" fill="#E8F1FF" font-size="9" font-weight="700">100.06%</text>
+            <text x="45" y="53" text-anchor="middle" fill="#6F8FB5" font-size="7">RATIO</text>
+          </svg>
+          <div style="flex:1;">
+            <div class="legend-item"><span class="legend-dot" style="background:#27D3FF;"></span>Escrow (BNI)<span class="legend-pct">99.96%</span></div>
+            <div class="legend-item"><span class="legend-dot" style="background:#B9FF3B;"></span>Bonds<span class="legend-pct" style="color:#B9FF3B;">0.04%</span></div>
+            <div class="legend-item" style="opacity:0.5;"><span class="legend-dot" style="background:#F3B63F;border:1px dashed #F3B63F;background:transparent;"></span><span style="color:#F3B63F;font-size:9px;">Nobu (Jun)</span><span class="legend-pct" style="color:#F3B63F;">--</span></div>
+          </div>
+        </div>
+        <div class="total-reserve-label">Total Reserve</div>
+        <div class="total-reserve-val">IDR 278,018,421,264</div>
+      </div>
+
+      <!-- Top Reserve Banks -->
+      <div class="panel">
+        <div class="panel-label">Top Reserve Banks</div>
+        <div class="bank-row">
+          <div class="bank-rank">1</div>
+          <div class="bank-info">
+            <div class="bank-name">Bank BNI</div>
+            <div class="bank-amt">Rp 277,898,421,264</div>
+          </div>
+          <div class="bank-bar-bg"><div class="bank-bar-fill" style="width:99.96%;background:#27D3FF;"></div></div>
+          <div class="bank-pct" style="color:#27D3FF;">99.96%</div>
+        </div>
+        <div class="bank-row">
+          <div class="bank-rank">2</div>
+          <div class="bank-info">
+            <div class="bank-name">Bank Nobu</div>
+            <div class="bank-amt" style="color:#F3B63F;">Rp 0 <span class="nobu-badge">Active Jun 2026</span></div>
+          </div>
+          <div class="bank-bar-bg"><div class="bank-bar-fill" style="width:0%;background:#F3B63F;"></div></div>
+          <div class="bank-pct" style="color:#F3B63F;">0.00%</div>
+        </div>
+        <div class="bank-row" style="border-bottom:none;">
+          <div class="bank-rank">3</div>
+          <div class="bank-info">
+            <div class="bank-name">Bonds</div>
+            <div class="bank-amt">Rp 120,000,000</div>
+          </div>
+          <div class="bank-bar-bg"><div class="bank-bar-fill" style="width:0.04%;background:#B9FF3B;"></div></div>
+          <div class="bank-pct" style="color:#B9FF3B;">0.04%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #1C3F66;">
+          <span style="font-size:9px;color:#6F8FB5;letter-spacing:1px;">TOTAL RESERVE FIAT</span>
+          <span style="font-size:12px;color:#27D3FF;font-weight:700;">IDR 278,018,421,264</span>
+        </div>
+        <div class="reserve-ratio-strip">
+          <div class="ratio-dot"></div>
+          <div class="ratio-strip-text">RESERVE RATIO: 100.06% ✓<br>
+            <span style="font-size:8px;color:#3CFF7888;">Rp278.02B ÷ IDRP277.85B = 1.0006 &gt; 1.0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Circulation On-Chain -->
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="panel-label">Top Circulation On-Chain</div>
+          <div style="font-size:8px;color:#6F8FB5;">SOURCE: IDRP.IO/TRANSPARENCY</div>
+        </div>
+        <table class="chain-table">
+          <thead>
+            <tr>
+              <th>Network</th>
+              <th>Authorized</th>
+              <th>Not Issued</th>
+              <th>Net Circulation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="chain-name-cell"><div class="chain-icon" style="background:#FF6B35;">K</div><div><div style="font-weight:700;">Kaia</div><div class="chain-share">99.92%</div></div></div></td>
+              <td>277,619,663,381</td>
+              <td style="color:#FF5E7E;">-300,422</td>
+              <td style="color:#FF6B35;font-weight:700;">277,619,362,959</td>
+            </tr>
+            <tr>
+              <td><div class="chain-name-cell"><div class="chain-icon" style="background:#8247E5;">P</div><div><div style="font-weight:700;">Polygon</div><div class="chain-share">0.08%</div></div></div></td>
+              <td>216,458,522</td>
+              <td style="color:#A56BFF;">-227,164</td>
+              <td style="color:#A56BFF;font-weight:700;">216,231,358</td>
+            </tr>
+            <tr>
+              <td><div class="chain-name-cell"><div class="chain-icon" style="background:#F3BA2F;color:#000;">B</div><div><div style="font-weight:700;">Binance</div><div class="chain-share">0.002%</div></div></div></td>
+              <td>5,002,177</td>
+              <td style="color:#6F8FB5;">0</td>
+              <td style="color:#F3BA2F;font-weight:700;">5,002,177</td>
+            </tr>
+            <tr>
+              <td><div class="chain-name-cell"><div class="chain-icon" style="background:#FF0013;">T</div><div><div style="font-weight:700;">Tron</div><div class="chain-share">0.0004%</div></div></div></td>
+              <td>1,000,391</td>
+              <td style="color:#6F8FB5;">0</td>
+              <td style="color:#FF5E7E;font-weight:700;">1,000,391</td>
+            </tr>
+            <tr>
+              <td><div class="chain-name-cell"><div class="chain-icon" style="background:#627EEA;">E</div><div><div style="font-weight:700;">Ethereum</div><div class="chain-share">0.001%</div></div></div></td>
+              <td>4,003,243</td>
+              <td style="color:#FF5E7E;">-1,001</td>
+              <td style="color:#627EEA;font-weight:700;">4,002,242</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="total-supply-row">
+          <span style="font-size:9px;color:#6F8FB5;letter-spacing:1px;">TOTAL NET ON-CHAIN SUPPLY</span>
+          <span style="font-size:13px;color:#27D3FF;font-weight:700;">IDRP 277,846,127,714</span>
+        </div>
+      </div>
+
+    </div><!-- end bottom-row -->
+  </div><!-- end right-panel -->
+</div><!-- end main -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">BANK NOBU · TREASURY · IDRP COMMAND CENTER v4 · On-Chain Data: idrp.io/transparency · 29 MEI 2026</div>
+  <div class="footer-right">
+    <div class="footer-stat">
+      <div class="footer-stat-label">CHAINS AKTIF</div>
+      <div style="color:#27D3FF;font-weight:700;">5</div>
+    </div>
+    <div class="footer-stat">
+      <div class="footer-stat-label">DOMINAN</div>
+      <div style="color:#FF6B35;font-weight:700;">KAIA</div>
+    </div>
+    <div class="footer-stat">
+      <div class="footer-stat-label">RATIO STATUS</div>
+      <div style="color:#3CFF78;font-weight:700;">GREEN</div>
+    </div>
+    <div class="footer-stat">
+      <div class="footer-stat-label">NOBU ESCROW</div>
+      <div style="color:#F3B63F;font-weight:700;">1 JUN 2026</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
